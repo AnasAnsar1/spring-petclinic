@@ -1,11 +1,16 @@
-node('JDK-MVN1') {
-    stage('git') {
-    git branch: 'ver_1.0', url: 'https://github.com/AnasAnsar1/spring-petclinic.git'
-}
-stage('build') {
-    sh 'mvn package'
-}
-stage('Archive') {
-    junit '**/surefire-reports/*.xml'
-}
+pipeline {
+    agent { label 'JDK-MVN1'}
+        stages{
+            stage('git'){
+                steps{
+                    git url: 'https://github.com/AnasAnsar1/spring-petclinic.git' , branch: 'ver_1.0'
+                }
+            }
+            stage('build'){
+                steps{
+                    sh 'mvn package'
+                    junit '**/surefire-reports/*.xml'
+                }
+            }
+        }
 }
