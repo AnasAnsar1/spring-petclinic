@@ -1,35 +1,57 @@
 pipeline{
-    agent { label 'JDK11_MVN'}
-    parameters { choice(name: 'branch', choices: ['main', 'ver_1.0'], description: 'chose a branch')
-                 string(name: 'goals', defaultValue: 'mvn', description: 'Put in goals for maven')}
+    agent {label 'JDK11_MVN'}
     stages{
         stage('vcs'){
             steps{
-                git url: 'https://github.com/AnasAnsar1/spring-petclinic.git', branch: "${params.branch}"
+                mail subject: "Build is starting",
+                     body: "Build is cloned and starting on node $env.NODE_NAME",
+                     to: "anasansarii78@gmail.com"
+                    git url: "https://github.com/AnasAnsar1/spring-petclinic.git", branch: "ver_1.0"
             }
-        }    
-        stage('build'){
+        }
+        stage('artifactory_config'){
             steps{
-                sh "${params.goals}"
-                junit '**/surefire-reports/*.xml'   
+                rtMavenDeployer (
+                id: 'MAVEN_DEPLOYER',
+                serverId: 'JFROG_DEFAULT',
+                releaseRepo: 'mv-libs-release-local',
+                snapshotRepo: 'mv-libs-snapshot-local'
+                )
             }
+        }
+        stage('Build && analysis'){
+            steps{
+                withSonarQubeEnv('SONAR_DEFAULT'){
+                    sh 'mvn clean package sonar:sonar'
+                }
+            }
+        }
+        stage('Maven_run'){
+            steps{
+                rtMavenRun (
+                tool: 'MAVEN_DEFAULT',
+                pom: 'pom.xml',
+                goals: 'clean install',
+                deployerId: "MAVEN_DEFAULT"
+           )
+                 }
         }
     }
-    post {
-            always {
-                mail subject: "Build started",
-                     body: "Build is started on node $env.NODE_NAME",
-                     to: "anasansarii78@gmail.com"
-            }
-            failure {
-                mail subject: "Build Failed",
-                     body: "Build failed on node $env.NODE_NAME",
-                     to: "anasansarii78@gmail.com"
-            }
-            success {
-                mail subject: "Build Success",
-                     body: "Build Success on node $env.NODE_NAME",
-                     to: "anasansarii78@gmail.com"
-            }
+    post{
+        always{
+            mail subject:"Build is finished",
+                 body: "Build is done",
+                 to: "anasansarii78@gmail.com"
         }
+        failure{
+            mail subject:"Build is failed",
+                 body: "Build has failed please try to fix it ASAP",
+                 to: "anasansarii78@gmail.com"
+        }
+        success{
+            mail subject:"Build is success",
+                 body: "Build has succeeded",
+                 to: "anasansarii78@gmail.com"
+        }
+    }
 }
