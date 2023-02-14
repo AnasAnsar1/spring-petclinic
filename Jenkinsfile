@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent {label 'Master'}
     stages {
         stage('SCM') {
             steps{
