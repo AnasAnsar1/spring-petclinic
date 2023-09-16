@@ -14,7 +14,7 @@ pipeline {
       steps {
         rtMavenDeployer (
         id: 'JFROG_ARTI',
-        serverId: 'JFROG_ARTI',
+        serverId: 'ARTIFACTORY_SERVER',
         releaseRepo: 'jenkins-integration',
         snapshotRepo: 'jenkins-integration',
       )
@@ -24,14 +24,18 @@ pipeline {
     stage('mvn_build & deploy_artifact') {
       steps {
         rtMavenRun (
-        tool: 'Maven 3.6.3', 
-        pom: 'pom.xml',
-        goals: 'clean install',
-        deployerId: 'JFROG_ARTI',
-        buildName: 'pet_clinic',
-        buildNumber: '4',
+          tool: 'Maven 3.6.3', 
+          pom: 'pom.xml',
+          goals: 'clean install',
+          deployerId: 'JFROG_ARTI',
       )
       }
+    }
+
+    stage('reporting') {
+      steps {
+        junit testResults: 'target/surefire-reports/*.xml'
+        }
     }
 
   }
