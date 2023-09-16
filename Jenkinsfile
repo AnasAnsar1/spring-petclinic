@@ -14,7 +14,7 @@ pipeline {
       steps {
         rtMavenDeployer (
         id: 'JFROG_ARTI',
-        serverId: 'ARTIFACTORY_SERVER',
+        serverId: 'JFROG_ARTI',
         releaseRepo: 'jenkins-integration',
         snapshotRepo: 'jenkins-integration',
       )
