@@ -24,7 +24,7 @@ pipeline {
     stage('mvn_build') {
       steps {
         rtMavenRun (
-        tool: Maven 3.6.3, 
+        tool: 'Maven 3.6.3', 
         pom: 'pom.xml',
         goals: 'clean install',
         deployerId: 'JFROG_ARTI',
