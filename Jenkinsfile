@@ -21,7 +21,7 @@ pipeline {
       }
     }
 
-    stage('mvn_build') {
+    stage('mvn_build & deploy_artifact') {
       steps {
         rtMavenRun (
         tool: 'Maven 3.6.3', 
@@ -29,7 +29,7 @@ pipeline {
         goals: 'clean install',
         deployerId: 'JFROG_ARTI',
         buildName: 'pet_clinic',
-        buildNumber: '3',
+        buildNumber: '4',
       )
       }
     }
