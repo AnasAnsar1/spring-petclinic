@@ -29,7 +29,7 @@ pipeline {
         goals: 'clean install',
         deployerId: 'JFROG_ARTI',
         buildName: 'pet_clinic',
-        buildNumber: '2',
+        buildNumber: '3',
       )
       }
     }
