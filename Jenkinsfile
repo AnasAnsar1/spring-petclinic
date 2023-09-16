@@ -11,16 +11,19 @@ pipeline {
     }
 
     stage('set_deployer') {
-      rtMavenDeployer (
+      steps {
+        rtMavenDeployer (
         id: 'JFROG_ARTI',
         serverId: 'JFROG_ARTI',
         releaseRepo: 'jenkins-integration',
         snapshotRepo: 'jenkins-integration',
       )
+      }
     }
 
     stage('mvn_build') {
-      rtMavenRun (
+      steps {
+        rtMavenRun (
         tool: MAVEN_TOOL, 
         pom: 'pom.xml',
         goals: 'clean install',
@@ -28,6 +31,7 @@ pipeline {
         buildName: 'pet_clinic',
         buildNumber: '2',
       )
+      }
     }
 
   }
