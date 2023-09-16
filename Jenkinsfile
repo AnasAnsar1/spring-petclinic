@@ -10,13 +10,26 @@ pipeline {
       }
     }
 
-    stage('Build & Sonar Analysis') {
-      steps {
-        withSonarQubeEnv('SELF_HOSTED') {
-          sh 'mvn clean package sonar:sonar'
-      }
-      }
+    stage('set_deployer') {
+      rtMavenDeployer (
+        id: 'JFROG_ARTI',
+        serverId: 'JFROG_ARTI',
+        releaseRepo: 'jenkins-integration',
+        snapshotRepo: 'jenkins-integration',
+      )
     }
-  }
 
+    stage('mvn_build') {
+      rtMavenRun (
+        tool: MAVEN_TOOL, 
+        pom: 'pom.xml',
+        goals: 'clean install',
+        deployerId: 'JFROG_ARTI',
+        buildName: 'pet_clinic',
+        buildNumber: '2',
+      )
+    }
+
+  }
 }
+
